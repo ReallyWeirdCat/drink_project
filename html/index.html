@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>It is wednesday?</title>
+    <style>
+        body {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    color: #000000;
+    background-image: url(https://weirdcat.ru/img/vivid-blurred-colorful-background.jpg);
+    background-color: #9ae1ff;
+    margin: 0;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration:none;
+}
+
+.container {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+  }
+
+.header {
+margin: 30px 0 80px 0;
+  }
+
+.navigation__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.feast {
+    text-align: start;
+}
+
+.feast__title {
+    font-size: 40px;
+}
+
+.feast__text {
+    font-size: 20px;
+}
+
+.likes {
+    display: flex;
+    float: right;
+    right: 30%;
+    width: 33%;
+    gap: 15px;
+}
+
+.likes__images {
+    filter: grayscale(100%), contrast(150%);
+}
+
+.likes__images_on {
+    filter: brightness(0%);
+}
+
+.feast__visits {
+    margin-top: 40px;
+    font-size: 20px;
+}
+
+.footer {
+    background-color: #1C1C1C;
+    color: aliceblue;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+}
+
+.footer a {
+    color: aliceblue;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <nav class="navigation">
+                <ul class="navigation__list">
+                    <li class="navigation__list__item"><img src="https://weirdcat.ru/img/free-icon-glasses-with-wine-65673.png" alt="Наш лого" width="100"></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <section class="feast">
+                <h1 class="feast__title" id="reason_title">Вероятно, наш сервер умер и мы не смогли загрузить праздник..</h1>
+                <p class="feast__text" id="reason_description">Нам очень жаль, приносим извинения</p>
+                <div class="likes">
+                    <img src="https://weirdcat.ru/img/like_love_icon_228200.png" alt="" class="likes__images" width="50px" id="like">
+                    <p class="likes__num" id="likes"></p>
+                </div>
+                <p class="feast__visits" id="visits">А ты часто тут бываешь..</p>
+            </section>
+        </main>
+        <footer class="footer">
+            <p class="footer__item">Все права защищены, нападайте..</p>
+            <p class="footer__item"><a href="/about">О нас</a></p>
+        </footer>
+    </div>
+    <script>
+        let likes = 0
+        let liked = false
+        let url = document.location.origin;
+        fetch(url + "/api/getreason")
+        .then((response) => response.json())
+        .then((json) => {
+        
+            liked = json.liked
+            if (liked) {
+                document.getElementById("like").classList.toggle("likes__images_on");
+            }
+            document.getElementById("reason_title").textContent=json.title;
+            document.getElementById("reason_description").textContent=json.description;
+            document.getElementById("visits").textContent="Подобрано Вами поводов выпить: "+json.visits.toString()+"!";
+            if (json.cheers != null) {
+    
+                likes = parseInt(json.cheers)
+                document.getElementById("likes").textContent=""+ json.cheers;
+                
+                document.getElementById("like").onclick = function() {
+                    fetch(url + "/api/like")
+                    
+                    if (liked)
+                    {
+                        likes -= 1;
+                    }
+                    else
+                    {
+                        likes +=1;
+                    }
+                    liked = !liked
+                    document.getElementById("like").classList.toggle("likes__images_on");
+                    document.getElementById("likes").textContent=""+ likes.toString() + "";
+                }
+            } else {
+                console.log("ow naaaw")
+                document.getElementById('like').remove();
+            };	
+        })
+        
+    </script>
+</body>
+</html>
